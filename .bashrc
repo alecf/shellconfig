@@ -1,5 +1,9 @@
 # from http://superuser.com/questions/39751/add-directory-to-path-if-its-not-already-there
-PREFIX=`brew --prefix`
+if [ -x $(command -v brew) ]; then
+    PREFIX=`brew --prefix`
+else
+    PREFIX=
+fi
 
 add_to_path ()
 {
