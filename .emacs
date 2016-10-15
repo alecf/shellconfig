@@ -52,6 +52,13 @@
 
 (global-auto-revert-mode 1)
 
+;; MELPA is a nice package repository with newer packages like flycheck
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
+
+
 ;; From http://www.emacswiki.org/emacs/Ack
 (defvar ack-history nil
   "History for the `ack' command.")
@@ -102,12 +109,6 @@
 ;; (set-fontset-font t 'cyrillic "Droid Sans Mono")
 
 (put 'downcase-region 'disabled nil)
-
-;; MELPA is a nice package repository with newer packages like flycheck
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
 
 
 ;; begin flycheck - mostly copied from http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
