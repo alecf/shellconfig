@@ -1,5 +1,5 @@
 # from http://superuser.com/questions/39751/add-directory-to-path-if-its-not-already-there
-if [ -x $(command -v brew) ]; then
+if [ -x "$(command -v brew)" ]; then
     PREFIX=`brew --prefix`
 else
     PREFIX=
@@ -52,7 +52,9 @@ alias ls="ls --color=auto"
 export GREP_OPTIONS='--color=auto'
 export LS_OPTS='--color=auto'
 
-eval "$(rbenv init -)"
+if [ -x "$(command -v rbenv)" ]; then
+  eval "$(rbenv init -)"
+fi
 
 if [ -x $HOME/bin/src-hilite-lesspipe.sh ]; then
     export LESSOPEN="|$HOME/bin/src-hilite-lesspipe.sh %s"
