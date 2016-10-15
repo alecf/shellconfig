@@ -1,0 +1,19 @@
+[user]
+	email = alecf@flett.org
+	name = Alec Flett
+[push]
+	default = simple
+[alias]
+	changed = diff --stat
+	pu = push -u origin HEAD
+        b = for-each-ref --sort=-committerdate refs/heads/
+	please = push --force-with-lease
+	commend = commit --amend --no-edit
+[core]
+	excludesfile = /Users/alecf/.gitignore_global
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
