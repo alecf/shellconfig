@@ -1,0 +1,2 @@
+# shellconfig
+My homedir
