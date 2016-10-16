@@ -87,3 +87,8 @@ alias dc-lint='docker-compose exec frontend ./node_modules/.bin/eslint --color -
 export GIT_EDITOR=emacsclient
 
 ulimit -n 65536 65536
+
+if [ -d "$HOME/.nvm" ]; then
+    export NVM_DIR="$HOME/.nvm"
+    . "$NVM_DIR/nvm.sh"
+fi
