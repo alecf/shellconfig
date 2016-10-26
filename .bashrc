@@ -85,6 +85,7 @@ alias dclf='docker-compose logs --tail=20 -f'
 alias dc-lint-watch='docker-compose exec frontend ./node_modules/.bin/watch "time ./node_modules/.bin/eslint --color --cache uf" uf'
 alias dc-lint='docker-compose exec frontend ./node_modules/.bin/eslint --color --cache uf'
 export GIT_EDITOR=emacsclient
+export UF_DOTENV=.env
 
 ulimit -n 65536 65536
 
