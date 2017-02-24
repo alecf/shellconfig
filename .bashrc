@@ -1,9 +1,12 @@
 # from http://superuser.com/questions/39751/add-directory-to-path-if-its-not-already-there
 if [ -x "$(command -v brew)" ]; then
-    PREFIX=`brew --prefix`
+    BREW_PREFIX=`brew --prefix`
 else
-    PREFIX=
+    BREW_PREFIX=
 fi
+
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 
 add_to_path ()
 {
@@ -41,8 +44,8 @@ export PAGER=less
 export LESS="-R -S -X"
 
 # Autocomplete
-if [ -f $PREFIX/etc/bash_completion ]; then
-    . $PREFIX/etc/bash_completion
+if [ -f $BREW_PREFIX/etc/bash_completion ]; then
+    . $BREW_PREFIX/etc/bash_completion
 fi
 
 # save my sanity
@@ -79,6 +82,7 @@ alias noorig="files=\$(find . -name '*.orig') ; echo Remove \$files? ; confirm &
 _eslintd() {
     git diff --name-only --relative $* | grep '\.js$' | xargs -t ./node_modules/.bin/eslint --fix
 }
+alias gbage='for k in `git branch | perl -pe s/^..//`; do echo -e `git show --pretty=format:"%Cgreen%ci %Cblue%cr%Creset" $k -- | head -n 1`\\t$k; done | sort -r'
 alias eslintd=_eslintd
 alias dc=docker-compose
 alias dclf='docker-compose logs --tail=20 -f'
@@ -86,5 +90,11 @@ alias dc-lint-watch='docker-compose exec frontend ./node_modules/.bin/watch "tim
 alias dc-lint='docker-compose exec frontend ./node_modules/.bin/eslint --color --cache uf'
 export GIT_EDITOR=emacsclient
 export UF_DOTENV=.env
+
+# NVM, so we don't break the system copy, such as homebrew
+export NVM_DIR="$HOME/.nvm"
+if [ -x /usr/local/opt/nvm/nvm.sh ]; then
+    . "/usr/local/opt/nvm/nvm.sh"
+fi
 
 ulimit -n 65536 65536
