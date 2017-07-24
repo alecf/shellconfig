@@ -9,6 +9,11 @@
         b = for-each-ref --sort=-committerdate refs/heads/
 	please = push --force-with-lease
 	commend = commit --amend --no-edit
+        recent = for-each-ref --sort=committerdate refs/heads/ --format=' %(color:blue) %(authorname) %(color:yellow)%(refname:short)%(color:reset)'
+        recent-nf = for-each-ref --sort=committerdate refs/heads/ --format=' %(authorname) %(refname:short)'
+        update = "!git fetch && git pull --rebase origin master"
+        cleanup = "!git checkout master && git fetch --prune && git branch -vv | grep ': gone]' | awk '{print $1}' | xargs git branch -d"
+
 [core]
 	excludesfile = /Users/alecf/.gitignore_global
 [difftool "sourcetree"]
