@@ -90,7 +90,7 @@ _eslintd() {
 alias gbage='for k in `git branch | perl -pe s/^..//`; do echo -e `git show --pretty=format:"%Cgreen%ci %Cblue%cr%Creset" $k -- | head -n 1`\\t$k; done | sort -r'
 alias eslintd=_eslintd
 alias dc=docker-compose
-alias dclf='docker-compose logs --tail=20 -f'
+alias dclf='COMPOSE_HTTP_TIMEOUT=10000 docker-compose logs --tail=20 -f'
 alias dc-lint-watch='docker-compose exec frontend ./node_modules/.bin/watch "time ./node_modules/.bin/eslint --color --cache uf" uf'
 alias dc-lint='docker-compose exec frontend ./node_modules/.bin/eslint --color --cache uf'
 export GIT_EDITOR=emacsclient
@@ -108,3 +108,11 @@ if [ -d "$HOME/.nvm" ]; then
     export NVM_DIR="$HOME/.nvm"
     . "$NVM_DIR/nvm.sh"
 fi
+
+# pbpaste | findfailures
+alias findfailures="jq -r '.suites[].cases[] | select(.status==\"FAILED\") | .className' | sort -u"
+
+alias dockertty="screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty"
+gitcommitlast() {
+  git diff --name-only --relative $* | xargs -I== git log -1 --format=format:"git commit == -m 'squash with %h (%s)'%n" == | cat
+}
