@@ -5,6 +5,11 @@ else
     BREW_PREFIX=
 fi
 
+if [ -d "$HOME/.pyenv" ]; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+fi
+
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
@@ -98,3 +103,8 @@ if [ -x /usr/local/opt/nvm/nvm.sh ]; then
 fi
 
 ulimit -n 65536 65536
+
+if [ -d "$HOME/.nvm" ]; then
+    export NVM_DIR="$HOME/.nvm"
+    . "$NVM_DIR/nvm.sh"
+fi
