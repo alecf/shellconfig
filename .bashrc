@@ -37,6 +37,10 @@ path_tail ()
 # Need to just incorporate this into PS1
 PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}:${PWD}\007"'
 
+if [ -n "$(type -t update_terminal_cwd)" ]; then
+    PROMPT_COMMAND="$PROMPT_COMMAND;update_terminal_cwd"
+fi
+
 add_to_path /usr/local/opt/coreutils/libexec/gnubin
 add_to_path ~/bin
 
@@ -104,7 +108,7 @@ fi
 
 ulimit -n 65536 65536
 
-if [ -d "$HOME/.nvm" ]; then
+if [ -f "$HOME/.nvm/nvm.sh" ]; then
     export NVM_DIR="$HOME/.nvm"
     . "$NVM_DIR/nvm.sh"
 fi
