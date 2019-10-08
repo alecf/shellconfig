@@ -61,7 +61,7 @@ fi
 alias ack-grep=ack
 # Shell opts
 alias ls="ls --color=auto"
-export GREP_OPTIONS='--color=auto'
+# export GREP_OPTIONS='--color=auto'
 export LS_OPTS='--color=auto'
 
 if [ -x "$(command -v rbenv)" ]; then
