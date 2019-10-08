@@ -12,7 +12,10 @@
  '(backup-by-copying t)
  '(backup-directory-alist (quote (("." . "~/.emacs.d/backups"))))
  '(custom-enabled-themes (quote (wheatgrass)))
- '(flycheck-python-flake8-executable "/Users/alecf/ufenv/bin/flake8")
+ '(flycheck-disabled-checkers (quote (javascript-jshint json-jsonlist python-pylint)))
+ '(flycheck-python-flake8-executable "/Users/alecf/.pyenv/versions/3.6.4/bin/flake8")
+ '(flycheck-python-pylint-executable "/Users/alecf/.pyenv/versions/3.6.4/bin/pylint")
+ '(groovy-indent-offset 2)
  '(js2-global-externs (list "Footprint" "SC"))
  '(js2-highlight-level 3)
  '(js2-strict-trailing-comma-warning nil)
@@ -88,8 +91,14 @@
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . web-mode))
 (setq web-mode-content-types-alist
       '(("jsx" . "\\.js[x]?\\'")))
+; do NOT line up cascaded-call dots to the first line - instead use
+; default indentation rules, which ends up lining up all dots after
+; the first line.
+(add-to-list 'web-mode-indentation-params '("lineup-calls" . nil))
+
 ;; end web-mode
 
 ;; js2-mode
@@ -133,9 +142,6 @@
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;; disable jshint since we prefer eslint checking
-(setq-default flycheck-disabled-checkers
-  (append flycheck-disabled-checkers
-          '(javascript-jshint)))
 
 ;; use eslint with web-mode to get inline JS (also supposedly for jsx..)
 (flycheck-add-mode 'javascript-eslint 'web-mode)
@@ -225,3 +231,33 @@
 ;;                            (split-string dockernames-raw "\n"))))
 ;;         (setq ad-return-value dockernames))
 ;;     ad-do-it))
+
+(defun my-insert-file-name (filename &optional args)
+  "Insert name of file FILENAME into buffer after point.
+
+  Prefixed with \\[universal-argument], expand the file name to
+  its fully canocalized path.  See `expand-file-name'.
+
+  Prefixed with \\[negative-argument], use relative path to file
+  name from current directory, `default-directory'.  See
+  `file-relative-name'.
+
+  The default with no prefix is to insert the file name exactly as
+  it appears in the minibuffer prompt."
+  ;; Based on insert-file in Emacs -- ashawley 20080926
+  (interactive "*fInsert file name: \nP")
+  (cond ((eq '- args)
+         (insert (file-relative-name filename)))
+        ((not (null args))
+         (insert (expand-file-name filename)))
+        (t
+         (insert filename))))
+
+(global-set-key "\C-c\C-i" 'my-insert-file-name)
+
+;; auto-complete mode
+(ac-config-default)
+;; Alt-tab to complete
+(define-key ac-mode-map (kbd "M-TAB") 'auto-complete)
+;; don't show the autocomplete automatically
+(setq ac-auto-start nil)
