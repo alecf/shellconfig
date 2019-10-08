@@ -41,8 +41,10 @@ if [ -n "$(type -t update_terminal_cwd)" ]; then
     PROMPT_COMMAND="$PROMPT_COMMAND;update_terminal_cwd"
 fi
 
+add_to_path /usr/local/opt/gettext/bin
 add_to_path /usr/local/opt/coreutils/libexec/gnubin
 add_to_path ~/bin
+add_to_path ~/.local/bin
 
 source ~/.git-prompt.sh
 source ~/.colors.sh
@@ -59,6 +61,7 @@ fi
 
 # save my sanity
 alias ack-grep=ack
+alias meld=/Applications/Meld.app/Contents/MacOS/meld
 # Shell opts
 alias ls="ls --color=auto"
 export GREP_OPTIONS='--color=auto'
@@ -91,18 +94,28 @@ alias noorig="files=\$(find . -name '*.orig') ; echo Remove \$files? ; confirm &
 _eslintd() {
     git diff --name-only --relative $* | grep '\.js$' | xargs -t ./node_modules/.bin/eslint --fix
 }
-alias gbage='for k in `git branch | perl -pe s/^..//`; do echo -e `git show --pretty=format:"%Cgreen%ci %Cblue%cr%Creset" $k -- | head -n 1`\\t$k; done | sort -r'
+_tslintd() {
+    git diff --name-only --relative $* | grep -E '\.tsx?$' | xargs -t ./node_modules/.bin/tslint --fix -p .
+}
+_precommitd() {
+    git diff --name-only --relative $* | grep -E '\.tsx?$' | xargs -t pre-commit run --files
+}
+alias gbage='for k in `git branch --format "%(refname:short)"`; do echo -e "`git log -1 --color --pretty=format:"%Cgreen%ci %Cblue%<(13,trunc)%cr %C(yellow bold)%<(30,trunc)%S %Creset%<(40,trunc)%D" $k --`"; done | sort -r'
+
 alias eslintd=_eslintd
+alias tslintd=_tslintd
+alias precommitd=_precommitd
 alias dc=docker-compose
 alias dclf='COMPOSE_HTTP_TIMEOUT=10000 docker-compose logs --tail=20 -f'
 alias dc-lint-watch='docker-compose exec frontend ./node_modules/.bin/watch "time ./node_modules/.bin/eslint --color --cache uf" uf'
 alias dc-lint='docker-compose exec frontend ./node_modules/.bin/eslint --color --cache uf'
+alias pcommit='git diff --name-only --relative master... | xargs -t pre-commit run --files'
 export GIT_EDITOR=emacsclient
 export UF_DOTENV=.env
 
 # NVM, so we don't break the system copy, such as homebrew
 export NVM_DIR="$HOME/.nvm"
-if [ -x /usr/local/opt/nvm/nvm.sh ]; then
+if [ -f /usr/local/opt/nvm/nvm.sh ]; then
     . "/usr/local/opt/nvm/nvm.sh"
 fi
 
@@ -113,10 +126,13 @@ if [ -f "$HOME/.nvm/nvm.sh" ]; then
     . "$NVM_DIR/nvm.sh"
 fi
 
+aws_mfa_iam="arn:aws:iam::043731723972:mfa/alecf"
+alias awslogin="read -p 'Enter MFA Code:' mfa && echo \$(aws-auth --serial-number $aws_mfa_iam --token-code \$mfa)"
+
 # pbpaste | findfailures
 alias findfailures="jq -r '.suites[].cases[] | select(.status==\"FAILED\") | .className' | sort -u"
 
-alias dockertty="screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty"
+alias dockertty="screen ~/Library/Containers//com.docker.docker/Data/vms/0/tty"
 gitcommitlast() {
-  git diff --name-only --relative $* | xargs -I== git log -1 --format=format:"git commit == -m 'squash with %h (%s)'%n" == | cat
+  git diff --name-only --relative $* | xargs -I== git log -1 --format=format:"git commit == --no-verify -m 'squash with %h (%s)'%n" == | cat
 }
