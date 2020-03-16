@@ -92,7 +92,7 @@ confirm () {
 alias noorig="files=\$(find . -name '*.orig') ; echo Remove \$files? ; confirm && rm -f \$files"
 
 _eslintd() {
-    git diff --name-only --relative $* | grep '\.js$' | xargs -t ./node_modules/.bin/eslint --fix
+    git diff --name-only --relative $* | grep -E '\.[jt]sx?$' | xargs -t ./node_modules/.bin/eslint --fix
 }
 _tslintd() {
     git diff --name-only --relative $* | grep -E '\.tsx?$' | xargs -t ./node_modules/.bin/tslint --fix -p .
