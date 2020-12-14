@@ -37,7 +37,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(magit-diff-added ((t (:background "#4fc3f7" :foreground "#ddffdd"))))
+ '(magit-diff-added-highlight ((t (:background "#c8e6c9" :foreground "#ffffff")))))
 
 (add-to-list 'load-path (expand-file-name "~/.elisp"))
 (setq x-select-enable-clipboard t)
