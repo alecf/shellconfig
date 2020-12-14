@@ -90,6 +90,10 @@ confirm () {
 }
 
 alias noorig="files=\$(find . -name '*.orig') ; echo Remove \$files? ; confirm && rm -f \$files"
+#>>agr "search" "replace"
+agr() {
+  ag "$1" --nogroup | awk '{print substr($1,1,index($1,":")-1);}' | xargs -I {} sed -i '' -e "s/$1/$2/g" {}
+}
 
 _eslintd() {
     git diff --name-only --relative $* | grep -E '\.[jt]sx?$' | xargs -t ./node_modules/.bin/eslint --fix
@@ -98,7 +102,7 @@ _tslintd() {
     git diff --name-only --relative $* | grep -E '\.tsx?$' | xargs -t ./node_modules/.bin/tslint --fix -p .
 }
 _precommitd() {
-    git diff --name-only --relative $* | grep -E '\.tsx?$' | xargs -t pre-commit run --files
+    git diff --name-only --relative $* | xargs -t pre-commit run --files
 }
 alias gbage='for k in `git branch --format "%(refname:short)"`; do echo -e "`git log -1 --color --pretty=format:"%Cgreen%ci %Cblue%<(13,trunc)%cr %C(yellow bold)%<(30,trunc)%S %Creset%<(40,trunc)%D" $k --`"; done | sort -r'
 
@@ -110,6 +114,7 @@ alias dclf='COMPOSE_HTTP_TIMEOUT=10000 docker-compose logs --tail=20 -f'
 alias dc-lint-watch='docker-compose exec frontend ./node_modules/.bin/watch "time ./node_modules/.bin/eslint --color --cache uf" uf'
 alias dc-lint='docker-compose exec frontend ./node_modules/.bin/eslint --color --cache uf'
 alias pcommit='git diff --name-only --relative master... | xargs -t pre-commit run --files'
+alias noansi="sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'"
 export GIT_EDITOR=emacsclient
 export UF_DOTENV=.env
 
