@@ -2,5 +2,5 @@
 
 To use:
 
-$ mkdir ~/shellconfig
-$ cd ~/shellconfig
+$ git clone https://github.com/alecf/shellconfig.git --separate-git-dir=shellconfig
+$ echo "gitdir: shellconfig" > .git
