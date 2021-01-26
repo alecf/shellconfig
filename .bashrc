@@ -233,11 +233,13 @@ alias dc-lint-watch='docker-compose exec frontend ./node_modules/.bin/watch "tim
 alias dc-lint='docker-compose exec frontend ./node_modules/.bin/eslint --color --cache uf'
 alias pcommit='git diff --name-only --relative master... | xargs -t pre-commit run --files'
 alias noansi="sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'"
+
 export GIT_EDITOR=emacsclient
 export UF_DOTENV=.env
 
-
-ulimit -n 65536 65536
+if [ "$(uname)" == "Darwin" ]; then
+  ulimit -n 65536 65536
+fi
 
 # NVM, so we don't break the system copy, such as homebrew
 if [ -f "$HOME/.nvm/nvm.sh" ]; then
