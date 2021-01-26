@@ -1,23 +1,19 @@
 if [ -x "$(command -v brew)" ]; then
-    BREW_PREFIX=`brew --prefix`
+    BREW_PREFIX=$(brew --prefix)
 else
     BREW_PREFIX=
 fi
 
 if [ -d "$HOME/.pyenv" ]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
 fi
 
-
-
 # from http://superuser.com/questions/39751/add-directory-to-path-if-its-not-already-there
-add_to_path ()
-{
-    if [[ "$PATH" =~ (^|:)"${1}"(:|$) ]]
-    then
+add_to_path() {
+    if [[ "$PATH" =~ (^|:)"${1}"(:|$) ]]; then
         return 0
     fi
     export PATH=${1}:$PATH
@@ -25,20 +21,18 @@ add_to_path ()
 
 # If not running interactively, don't do anything
 case $- in
-    *i*) ;;
-      *) return;;
+*i*) ;;
+*) return ;;
 esac
 
-xtitle ()
-{
+xtitle() {
     echo -ne "\033];$*\007"
 }
 
-path_tail ()
-{
-    shortpath=$(pwd|awk -F/ '{print $(NF-1) "/" $NF}')
+path_tail() {
+    shortpath=$(pwd | awk -F/ '{print $(NF-1) "/" $NF}')
     echo -n $shortpath
-#    xtitle $shortpath
+    #    xtitle $shortpath
 }
 
 # Need to just incorporate this into PS1
@@ -65,9 +59,6 @@ export LESS="-R -S -X"
 if [ -f $BREW_PREFIX/etc/bash_completion ]; then
     . $BREW_PREFIX/etc/bash_completion
 fi
-
-
-
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
@@ -98,7 +89,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
+xterm-color | *-256color) color_prompt=yes ;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -108,29 +99,29 @@ esac
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
     else
-	color_prompt=
+        color_prompt=
     fi
 fi
 
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
+# if [ "$color_prompt" = yes ]; then
+#     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+# else
+#     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+# fi
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
-xterm*|rxvt*)
+xterm* | rxvt*)
     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
     ;;
-*)
-    ;;
+*) ;;
+
 esac
 
 # enable color support of ls and also add handy aliases
@@ -170,11 +161,11 @@ fi
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
 fi
 
 # save my sanity
@@ -186,7 +177,7 @@ alias ls="ls --color=auto"
 export LS_OPTS='--color=auto'
 
 if [ -x "$(command -v rbenv)" ]; then
-  eval "$(rbenv init -)"
+    eval "$(rbenv init -)"
 fi
 
 if [ -x $HOME/bin/src-hilite-lesspipe.sh ]; then
@@ -194,23 +185,23 @@ if [ -x $HOME/bin/src-hilite-lesspipe.sh ]; then
 fi
 
 ## from http://stackoverflow.com/questions/3231804/in-bash-how-to-add-are-you-sure-y-n-to-any-command-or-alias
-confirm () {
+confirm() {
     # call with a prompt string or use a default
     read -r -p "${1:-Are you sure? [y/N]} " response
     case $response in
-        [yY][eE][sS]|[yY])
-            true
-            ;;
-        *)
-            false
-            ;;
+    [yY][eE][sS] | [yY])
+        true
+        ;;
+    *)
+        false
+        ;;
     esac
 }
 
 alias noorig="files=\$(find . -name '*.orig') ; echo Remove \$files? ; confirm && rm -f \$files"
 #>>agr "search" "replace"
 agr() {
-  ag "$1" --nogroup | awk '{print substr($1,1,index($1,":")-1);}' | xargs -I {} sed -i '' -e "s/$1/$2/g" {}
+    ag "$1" --nogroup | awk '{print substr($1,1,index($1,":")-1);}' | xargs -I {} sed -i '' -e "s/$1/$2/g" {}
 }
 
 _eslintd() {
@@ -238,7 +229,7 @@ export GIT_EDITOR=emacsclient
 export UF_DOTENV=.env
 
 if [ "$(uname)" == "Darwin" ]; then
-  ulimit -n 65536 65536
+    ulimit -n 65536 65536
 fi
 
 # NVM, so we don't break the system copy, such as homebrew
@@ -255,6 +246,5 @@ alias findfailures="jq -r '.suites[].cases[] | select(.status==\"FAILED\") | .cl
 
 alias dockertty="screen ~/Library/Containers//com.docker.docker/Data/vms/0/tty"
 gitcommitlast() {
-  git diff --name-only --relative $* | xargs -I== git log -1 --format=format:"git commit == --no-verify -m 'squash with %h (%s)'%n" == | cat
+    git diff --name-only --relative $* | xargs -I== git log -1 --format=format:"git commit == --no-verify -m 'squash with %h (%s)'%n" == | cat
 }
-
