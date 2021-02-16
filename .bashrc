@@ -1,3 +1,5 @@
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
 if [ -x "$(command -v brew)" ]; then
     BREW_PREFIX=$(brew --prefix)
 else
@@ -248,3 +250,4 @@ alias dockertty="screen ~/Library/Containers//com.docker.docker/Data/vms/0/tty"
 gitcommitlast() {
     git diff --name-only --relative $* | xargs -I== git log -1 --format=format:"git commit == --no-verify -m 'squash with %h (%s)'%n" == | cat
 }
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
