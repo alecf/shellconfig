@@ -1,31 +1,32 @@
 [user]
-	email = alecf@flett.org
-	name = Alec Flett
+email = alecf@flett.org
+name = Alec Flett
 [push]
-	default = simple
+default = simple
 [alias]
-	changed = diff --stat
-	pu = push -u origin HEAD
-        b = for-each-ref --sort=-committerdate refs/heads/
-	please = push --force-with-lease
-	commend = commit --amend --no-edit
-        recent = for-each-ref --sort=committerdate refs/heads/ --format=' %(color:blue) %(authorname) %(color:yellow)%(refname:short)%(color:reset)'
-        recent-nf = for-each-ref --sort=committerdate refs/heads/ --format=' %(authorname) %(refname:short)'
-        update = "!git fetch && git pull --rebase origin master"
-        cleanup = "!git checkout master && git fetch --prune && git branch -vv | grep ': gone]' | awk '{print $1}' | xargs git branch -d"
+changed = diff --stat
+pu = push -u origin HEAD
+b = for-each-ref --sort=-committerdate refs/heads/
+please = push --force-with-lease
+commend = commit --amend --no-edit
+recent = for-each-ref --sort=committerdate refs/heads/ --format=' %(color:blue) %(authorname) %(color:yellow)%(refname:short)%(color:reset)'
+recent-nf = for-each-ref --sort=committerdate refs/heads/ --format=' %(authorname) %(refname:short)'
+update = "!git fetch && git pull --rebase origin master"
+cleanup-master = "!git checkout master && git fetch --prune && git branch -vv | grep ': gone]' | awk '{print $1}' | xargs git branch -d"
+cleanup-main = "!git checkout main && git fetch --prune && git branch -vv | grep ': gone]' | awk '{print $1}' | xargs git branch -d"
 
 [core]
-	excludesfile = /Users/alecf/.gitignore_global
+excludesfile = /Users/alecf/.gitignore_global
 [difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path =
+cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+path =
 [mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
+cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+trustExitCode = true
 [mergetool "meld"]
-	cmd = /Applications/Meld.app/Contents/MacOS/Meld "$LOCAL" "$MERGED" "$REMOTE"
+cmd = /Applications/Meld.app/Contents/MacOS/Meld "$LOCAL" "$MERGED" "$REMOTE"
 [merge]
-	tool = meld
+tool = meld
 
 [diff]
-	colorMovedWS = allow-indentation-change
+colorMovedWS = allow-indentation-change
