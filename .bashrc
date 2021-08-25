@@ -14,10 +14,11 @@ if [ -d "$HOME/.pyenv" ]; then
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
-    export PATH=$(pyenv root)/shims:$PATH
     if command -v virtualenv-init &>/dev/null; then
         eval "$(pyenv virtualenv-init -)"
     fi
+    # Adds the shims/ directory to the path
+    eval "$(pyenv init --path)"
 fi
 
 # from http://superuser.com/questions/39751/add-directory-to-path-if-its-not-already-there
