@@ -1,5 +1,9 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
+if [ -d "$HOME/.linuxbrew" ]; then
+    eval $(/home/ubuntu/.linuxbrew/bin/brew shellenv)
+fi
+
 if [ -x "$(command -v brew)" ]; then
     BREW_PREFIX=$(brew --prefix)
 else
@@ -10,8 +14,11 @@ if [ -d "$HOME/.pyenv" ]; then
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
+    if command -v virtualenv-init &>/dev/null; then
+        eval "$(pyenv virtualenv-init -)"
+    fi
+    # Adds the shims/ directory to the path
     eval "$(pyenv init --path)"
-    eval "$(pyenv virtualenv-init -)"
 fi
 
 # from http://superuser.com/questions/39751/add-directory-to-path-if-its-not-already-there
@@ -57,6 +64,9 @@ PS1="\[${COLOR_WHITE}\]\u@\h\[${COLOR_NC}\] \[${COLOR_YELLOW}\]"'$(path_tail)'"\
 
 export PAGER=less
 export LESS="-R -S -X"
+
+export GPG_TTY=$(tty)
+export AWS_VAULT_BACKEND=pass
 
 # Autocomplete
 if [ -f $BREW_PREFIX/etc/bash_completion ]; then
@@ -227,12 +237,18 @@ alias dc-lint-watch='docker-compose exec frontend ./node_modules/.bin/watch "tim
 alias dc-lint='docker-compose exec frontend ./node_modules/.bin/eslint --color --cache uf'
 alias pcommit='git diff --name-only --relative master... | xargs -t pre-commit run --files'
 alias noansi="sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'"
+alias ave="aws-vault exec"
+alias aved="ave dev --"
 
 export GIT_EDITOR=emacsclient
 export UF_DOTENV=.env
 
 if [ "$(uname)" == "Darwin" ]; then
     ulimit -n 65536 65536
+fi
+
+if [ "$(uname)" != "Darwin" ]; then
+    export AWS_VAULT_BACKEND=pass
 fi
 
 # NVM, so we don't break the system copy, such as homebrew
