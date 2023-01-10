@@ -1,6 +1,7 @@
 [user]
 email = alecf@flett.org
 name = Alec Flett
+	signingkey = 4CD3ADEAE261DE0B3731448C9FC71993C83BEF2D
 [push]
 default = simple
 [alias]
