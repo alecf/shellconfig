@@ -33,3 +33,5 @@ tool = meld
 colorMovedWS = allow-indentation-change
 [init]
 	defaultBranch = main
+[pull]
+	rebase = false
