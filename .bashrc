@@ -52,8 +52,8 @@ if [ -n "$(type -t update_terminal_cwd)" ]; then
     PROMPT_COMMAND="$PROMPT_COMMAND;update_terminal_cwd"
 fi
 
-add_to_path /usr/local/opt/gettext/bin
-add_to_path /usr/local/opt/coreutils/libexec/gnubin
+# add_to_path /usr/local/opt/gettext/bin
+# add_to_path /usr/local/opt/coreutils/libexec/gnubin
 add_to_path ~/bin
 add_to_path ~/.local/bin
 
@@ -239,9 +239,6 @@ alias pcommit='git diff --name-only --relative master... | xargs -t pre-commit r
 alias noansi="sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'"
 alias ave="aws-vault exec"
 alias aved="ave dev --"
-
-export GIT_EDITOR=emacsclient
-export UF_DOTENV=.env
 
 if [ "$(uname)" == "Darwin" ]; then
     ulimit -n 65536 65536
