@@ -10,6 +10,10 @@ else
     BREW_PREFIX=
 fi
 
+if [ -d "$BREW_PREFIX/opt/postgresql@15" ]; then
+    export PATH="$BREW_PREFIX/opt/postgresql@15/bin:$PATH"
+fi
+
 if [ -d "$HOME/.pyenv" ]; then
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
@@ -62,7 +66,7 @@ source ~/.colors.sh
 
 PS1="\[${COLOR_WHITE}\]\u@\h\[${COLOR_NC}\] \[${COLOR_YELLOW}\]"'$(path_tail)'"\[${COLOR_NC}\]\[${COLOR_LIGHT_BLUE}\]"'$(__git_ps1 " [%s]")'"\[${COLOR_NC}\] \$ "
 
-export PAGER=less
+export PAGER="less -r"
 export LESS="-R -S -X"
 
 export GPG_TTY=$(tty)
@@ -267,3 +271,7 @@ gitcommitlast() {
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH=$BUN_INSTALL/bin:$PATH

@@ -8,6 +8,7 @@ default = simple
 changed = diff --stat
 pu = push -u origin HEAD
 b = for-each-ref --sort=-committerdate refs/heads/
+continue =  "-c core.editor=true rebase --continue"
 please = push --force-with-lease
 commend = commit --amend --no-edit
 recent = for-each-ref --sort=committerdate refs/heads/ --format=' %(color:blue) %(authorname) %(color:yellow)%(refname:short)%(color:reset)'
