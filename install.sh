@@ -63,7 +63,7 @@ if ! command -v starship &> /dev/null; then
     # Detect OS and package manager
     if [ "$(uname)" = "Darwin" ]; then
         if command -v brew &> /dev/null; then
-            read -p "   Install Starship via Homebrew? [y/N] " -n 1 -r
+            read -p "   Install Starship via Homebrew? [y/N] " -n 1 -r </dev/tty
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 brew install starship
@@ -76,7 +76,7 @@ if ! command -v starship &> /dev/null; then
             echo "   Then run: brew install starship"
         fi
     elif [ "$(uname)" = "Linux" ]; then
-        read -p "   Install Starship? [y/N] " -n 1 -r
+        read -p "   Install Starship? [y/N] " -n 1 -r </dev/tty
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             curl -sS https://starship.rs/install.sh | sh
