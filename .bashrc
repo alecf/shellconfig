@@ -1,7 +1,7 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 if [ -d "$HOME/.linuxbrew" ]; then
-    eval $(/home/ubuntu/.linuxbrew/bin/brew shellenv)
+    eval $("$HOME/.linuxbrew/bin/brew" shellenv)
 fi
 
 if [ -x "$(command -v brew)" ]; then
@@ -14,7 +14,9 @@ if [ -d "$BREW_PREFIX/opt/postgresql@15" ]; then
     export PATH="$BREW_PREFIX/opt/postgresql@15/bin:$PATH"
 fi
 
-if [ -d "$HOME/.pyenv" ]; then
+# Guarded initialization: avoid running init twice in the same shell
+if [ -z "$PYENV_INITIALIZED" ] && command -v pyenv >/dev/null 2>&1; then
+    export PYENV_INITIALIZED=1
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
@@ -39,21 +41,19 @@ case $- in
 *) return ;;
 esac
 
-xtitle() {
-    echo -ne "\033];$*\007"
-}
+# Check for starship once, reuse throughout
+if command -v starship &> /dev/null; then
+    HAS_STARSHIP=1
+else
+    HAS_STARSHIP=
+fi
 
-path_tail() {
-    shortpath=$(pwd | awk -F/ '{print $(NF-1) "/" $NF}')
-    echo -n $shortpath
-    #    xtitle $shortpath
-}
-
-# Need to just incorporate this into PS1
-PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}:${PWD}\007"'
-
-if [ -n "$(type -t update_terminal_cwd)" ]; then
-    PROMPT_COMMAND="$PROMPT_COMMAND;update_terminal_cwd"
+# Terminal title (only when not using starship, which handles titles itself)
+if [ -z "$HAS_STARSHIP" ]; then
+    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}:${PWD}\007"'
+    if [ -n "$(type -t update_terminal_cwd)" ]; then
+        PROMPT_COMMAND="$PROMPT_COMMAND;update_terminal_cwd"
+    fi
 fi
 
 # add_to_path /usr/local/opt/gettext/bin
@@ -61,12 +61,17 @@ fi
 add_to_path ~/bin
 add_to_path ~/.local/bin
 
-source ~/.git-prompt.sh
-source ~/.colors.sh
+# Prompt configuration: use Starship if available, otherwise a simple fallback
+if [ -n "$HAS_STARSHIP" ]; then
+    eval "$(starship init bash)"
+else
+    # Simple fallback prompt: user@host:dir $
+    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]\$ '
+fi
 
-PS1="\[${COLOR_WHITE}\]\u@\h\[${COLOR_NC}\] \[${COLOR_YELLOW}\]"'$(path_tail)'"\[${COLOR_NC}\]\[${COLOR_LIGHT_BLUE}\]"'$(__git_ps1 " [%s]")'"\[${COLOR_NC}\] \$ "
-
-export PAGER="less -r"
+if [[ "$TERM_PROGRAM" != "vscode" && "$TERM_PROGRAM" != "cursor" ]]; then
+    export PAGER="less -r"
+fi
 export LESS="-R -S -X"
 
 export GPG_TTY=$(tty)
@@ -97,73 +102,38 @@ shopt -s checkwinsize
 #shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
+if command -v lesspipe &> /dev/null; then
+    eval "$(SHELL=/bin/sh lesspipe)"
+elif command -v lesspipe.sh &> /dev/null; then
+    eval "$(SHELL=/bin/sh lesspipe.sh)"
 fi
 
-# set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
-xterm-color | *-256color) color_prompt=yes ;;
-esac
+# If this is an xterm set the title to user@host:dir (only when not using starship)
+if [ -z "$HAS_STARSHIP" ]; then
+    case "$TERM" in
+    xterm* | rxvt*)
+        PS1="\[\e]0;\u@\h: \w\a\]$PS1"
+        ;;
+    *) ;;
+    esac
+fi
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-#force_color_prompt=yes
-
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-        # We have color support; assume it's compliant with Ecma-48
-        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-        # a case would tend to support setf rather than setaf.)
-        color_prompt=yes
-    else
-        color_prompt=
+# Cross-platform colored ls and grep
+if [ "$(uname)" = "Darwin" ]; then
+    alias ls='ls -G'
+else
+    # Linux: set up dircolors if available
+    if command -v dircolors &> /dev/null; then
+        test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     fi
-fi
-
-# if [ "$color_prompt" = yes ]; then
-#     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-# else
-#     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-# fi
-unset color_prompt force_color_prompt
-
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm* | rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*) ;;
-
-esac
-
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
 fi
+alias grep='grep --color=auto'
 
-# colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-# some more ls aliases
+# ls aliases
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
@@ -185,13 +155,7 @@ if ! shopt -oq posix; then
     fi
 fi
 
-# save my sanity
-alias ack-grep=ack
 alias meld=/Applications/Meld.app/Contents/MacOS/meld
-# Shell opts
-alias ls="ls --color=auto"
-# export GREP_OPTIONS='--color=auto'
-export LS_OPTS='--color=auto'
 
 if [ -x "$(command -v rbenv)" ]; then
     eval "$(rbenv init -)"
@@ -275,3 +239,14 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH=$BUN_INSTALL/bin:$PATH
+
+# pnpm
+export PNPM_HOME="/Users/alecf/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# Dotfiles management with bare git repo
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'

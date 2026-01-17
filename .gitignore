@@ -1,0 +1,19 @@
+# Ignore everything by default
+*
+
+# Explicitly track these files (add with: config add -f <file>)
+!.bashrc
+!.bash_profile
+!.profile
+!.gitconfig
+!.gitignore
+!.emacs
+!.config/starship.toml
+!.vscode-server/
+!.vscode-server/data/
+!.vscode-server/data/Machine/
+!.vscode-server/data/Machine/settings.json
+!README.md
+!bin/
+!bin/*
+!install.sh

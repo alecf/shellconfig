@@ -1,0 +1,54 @@
+# Starship config to match previous bash prompt: user@host dir [branch] $
+
+# Set the prompt format
+format = """
+$username\
+[@](white)\
+$hostname\
+ \
+$directory\
+$git_branch\
+$git_status\
+ \
+$character"""
+
+# Disable the newline at the start
+add_newline = false
+
+[username]
+style_user = "white bold"
+style_root = "red bold"
+format = "[$user]($style)"
+show_always = true
+
+[hostname]
+ssh_only = false
+format = "[$hostname]($style) "
+style = "white bold"
+
+[directory]
+truncation_length = 2
+truncate_to_repo = false
+style = "yellow"
+format = "[$path]($style)"
+
+[git_branch]
+style = "bright-blue"
+format = " [\\[$branch]($style)"
+
+[git_status]
+format = "[$all_status$ahead_behind\\]]($style) "
+style = "bright-blue"
+conflicted = "!"
+ahead = "↑"
+behind = "↓"
+diverged = "↕"
+untracked = "?"
+stashed = "*"
+modified = "~"
+staged = "+"
+deleted = "-"
+
+[character]
+success_symbol = "[\\$](white)"
+error_symbol = "[\\$](red)"
